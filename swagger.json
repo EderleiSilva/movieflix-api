@@ -26,6 +26,70 @@
                     }
                 }
             }
+        },
+        "/movies/{id}": {
+            "put": {
+                "tags": ["Movie"],
+                "summary": "Atualizar um filme",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "riquired": true,
+                        "description": "ID do Filme a ser atualizado",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref":"#/components/schemas/MovieInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Filme atualizado com sucesso"
+                    },
+                    "404": {
+                        "description": "Filme não encontrado"
+                    },
+                    "500": {
+                        "description": "Falha ao atualizar o registro do filme"
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Movie"],
+                "summary": "Remover um filme",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "riquired": true,
+                        "description": "ID do Filme a ser removido",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Filme removido com sucesso"
+                    },
+                    "404": {
+                        "description": "Filme não encontrado"
+                    },
+                    "500": {
+                        "description": "Falha foi possivel remover o filme"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -85,6 +149,40 @@
                         "description": "Data de lançamento do filme"
                     }
                 }
+            },
+            "MovieInput":{
+                "type": "object",
+                "required": [
+                    "title",
+                    "genre_id",
+                    "language_id",
+                    "oscar_count",
+                    "release_date"
+                ],
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "description": "Título do filme"
+                    },
+                    "genre_id": {
+                        "type": "integer",
+                        "description": "Gênero do filme"
+                    },
+                    "language_id": {
+                        "type": "integer",
+                        "description": "Idioma do filme"
+                    },
+                    "oscar_count": {
+                        "type": "integer",
+                        "description": "Quantidade de Oscars ganhos pelo filme"
+                    },
+                    "release_date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Data de lançamento do filme"
+                    }
+                }
+                
             }
         }
     }
