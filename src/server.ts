@@ -47,6 +47,58 @@ app.post('/movies', async (req, res) => {
         return res.status(500).send({menssage: "Falha ao cadastrar um filme"});
     }
     
+    res.status(200).send();
+});
+
+app.put("/movies/:id", async (req, res) => {
+    // pegar o id do registro que vai ser atualizado
+    const id = Number(req.params.id);
+
+    try {
+        const movie = await prisma.movie.findUnique({
+            where: {
+                id
+            }
+        });
+    
+        if(!movie){
+            return res.status(404).send({ message: "Filme não encontrado" });
+        }
+    
+        const data = { ...req.body };
+        data.release_date = data.release_date ? new Date(data.release_date) : undefined;
+    
+        // pegar os dados do filme que será atualizado e atualizar ele no prisma
+        await prisma.movie.update({
+            where: {
+                id
+            },
+            data: data
+        });
+    } catch (error) {
+        return res.status(500).send({ menssage: "Falha ao atualizar o registro do filme" });
+    }
+
+    // retornar o status correto informando que o filme foi atualizado
+    res.status(200).send()
+});
+
+app.delete("/movies/:id", async (req, res) => {
+    const id = Number(req.params.id);
+
+    try {
+        const movie = await prisma.movie.findUnique({ where: { id } });
+
+        if(!movie){
+            return res.status(404).send({ message: "O filme não foi encontrado" });
+        }
+
+        await prisma.movie.delete({ where: { id } });
+    } catch (error) {
+        return res.status(500).send({ message: "Não foi possivel remover o filme" });
+    }
+
+    res.status(200).send();
 });
 
 app.listen(port, () => {
