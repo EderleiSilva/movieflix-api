@@ -8,7 +8,9 @@
     "paths": {
         "/movies": {
             "get": {
-                "tags": ["Movie"],
+                "tags": [
+                    "Movie"
+                ],
                 "summary": "Obter todos os filmes",
                 "responses": {
                     "200": {
@@ -29,7 +31,9 @@
         },
         "/movies/{id}": {
             "put": {
-                "tags": ["Movie"],
+                "tags": [
+                    "Movie"
+                ],
                 "summary": "Atualizar um filme",
                 "parameters": [
                     {
@@ -47,7 +51,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref":"#/components/schemas/MovieInput"
+                                "$ref": "#/components/schemas/MovieInput"
                             }
                         }
                     }
@@ -65,7 +69,9 @@
                 }
             },
             "delete": {
-                "tags": ["Movie"],
+                "tags": [
+                    "Movie"
+                ],
                 "summary": "Remover um filme",
                 "parameters": [
                     {
@@ -93,7 +99,9 @@
         },
         "/movies/{genreName}": {
             "get": {
-                "tags":["Movie"],
+                "tags": [
+                    "Movie"
+                ],
                 "summary": "Filtrar filmes por gênero",
                 "parameters": [
                     {
@@ -118,10 +126,49 @@
                                 }
                             }
                         }
-
                     },
                     "500": {
                         "description": "Falha ao filtrar filmes por gênero"
+                    }
+                }
+            }
+        },
+        "/genres/{id}": {
+            "put": {
+                "tags": [
+                    "Genre"
+                ],
+                "summary": "Atualizar um gênero",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID do gênero a ser atualizado",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GenreInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Gênero atualizado com sucesso"
+                    },
+                    "404": {
+                        "description": "Gênero não econtrado"
+                    },
+                    "500": {
+                        "description": "Falha em atualizar o registro do gênero"
                     }
                 }
             }
@@ -185,7 +232,7 @@
                     }
                 }
             },
-            "MovieInput":{
+            "MovieInput": {
                 "type": "object",
                 "required": [
                     "title",
@@ -217,7 +264,18 @@
                         "description": "Data de lançamento do filme"
                     }
                 }
-                
+            },
+            "GenreInput": {
+                "type": "object",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Nome do gênero"
+                    }
+                }
             }
         }
     }
