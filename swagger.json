@@ -167,6 +167,9 @@
                     "404": {
                         "description": "Gênero não econtrado"
                     },
+                    "409": {
+                        "description": "Esse nome de gênero ja existe"
+                    },
                     "500": {
                         "description": "Falha em atualizar o registro do gênero"
                     }
