@@ -134,6 +134,39 @@
             }
         },
         "/genres": {
+            "get": {
+                "tags": ["Genre"],
+                "summary": "Obter todos os gêneros",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID do gênero a ser atualizado",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Genre"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Obter a lista de gêneros"
+                    },
+                    "500": {
+                        "description": "Falha ao obter a lista de gêneros"
+                    }
+                }
+            },
             "post": {
                 "tags": ["Genre"],
                 "summary": "Adicionar novo gênero",
@@ -153,7 +186,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/GenreInput"
+                                "$ref": "#/components/schemas/Genre"
                             }
                         }
                     }
@@ -309,7 +342,7 @@
                     }
                 }
             },
-            "Genres": {
+            "Genre": {
                 "type": "object",
                 "required": [
                     "name"
