@@ -11,16 +11,31 @@ app.use(express.json());
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get("/movies", async (_, res) => {
-    const movies = await prisma.movie.findMany({
-        orderBy: {
-            title: "asc"
-        },
-        include: {
-            genres: true,
-            languages: true
-        }
-    });
-    res.json(movies);
+    try {
+        const countMoviesAndAverageDuration = await prisma.movie.aggregate({
+            _count: {
+                _all: true,
+            },
+            _avg: {
+                duration: true
+            }
+        });
+    
+        const movies = await prisma.movie.findMany({
+            orderBy: {
+                title: "asc"
+            },
+            include: {
+                genres: true,
+                languages: true
+            }
+        });
+
+        res.status(200).json({ countMoviesAndAverageDuration, movies });
+
+    } catch (error) {
+        return res.status(500).send({menssage: "Falha ao buscar lista de filmes"});
+    }
 });
 
 app.post('/movies', async (req, res) => {
