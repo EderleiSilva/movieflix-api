@@ -14,7 +14,7 @@
                 "summary": "Obter todos os filmes",
                 "responses": {
                     "200": {
-                        "description": "Retorna uma lista de filmes",
+                        "description": "Retorna uma lista de filmes, quantidade de filmes e media de duração dos filmes",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -25,6 +25,9 @@
                                 }
                             }
                         }
+                    },
+                    "500": {
+                        "description": "Falha ao retornar uma lista de filmes"
                     }
                 }
             }
@@ -331,6 +334,10 @@
                         "type": "string",
                         "format": "date",
                         "description": "Data de lançamento do filme"
+                    },
+                    "duration": {
+                        "type": "integer",
+                        "description": "Duração em minutos do filme"
                     }
                 }
             },
@@ -341,7 +348,8 @@
                     "genre_id",
                     "language_id",
                     "oscar_count",
-                    "release_date"
+                    "release_date",
+                    "duration"
                 ],
                 "properties": {
                     "title": {
@@ -364,6 +372,10 @@
                         "type": "string",
                         "format": "date",
                         "description": "Data de lançamento do filme"
+                    },
+                    "duration": {
+                        "type": "integer",
+                        "description": "Duração em minutos do filme"
                     }
                 }
             },
