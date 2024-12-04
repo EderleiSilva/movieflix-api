@@ -164,10 +164,39 @@ app.put("/genres/:id", async (req, res) => {
 
         res.status(200).send(updateGenre);
     } catch (error) {
-        return res.status(500).send({ menssage: "Falha em atualizar o registro do gênero" });
+        return res.status(500).send({ message: "Falha em atualizar o registro do gênero" });
     }
 
 });
+
+app.post("/genres", async (req, res) => {
+    const { name } = req.body;
+
+    if(!name) {
+        return res.status(400).send({ message: "O nome do gênero é obrigatório" });
+    }
+
+    try {
+        const genre = await prisma.genre.findFirst({
+            where: { name: { equals: name, mode: "insensitive" } }
+        });
+
+        if(genre){
+            return res.status(409).send({ message: "Esse gênero ja existe" });
+        }
+
+        await prisma.genre.create({
+            data: { name }
+        });
+
+        res.status(200).send({ message: "Gênero adicionado com sucesso" });
+
+    } catch (error) {
+        return res.status(500).send({ message: "Falha ao adicionar o registro do gênero" });
+    }
+});
+
+
 
 app.listen(port, () => {
     console.log(`Servidor em execução na porta ${port}: http://localhost:${port}`);
