@@ -137,30 +137,19 @@
             "get": {
                 "tags": ["Genre"],
                 "summary": "Obter todos os gêneros",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "description": "ID do gênero a ser atualizado",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Genre"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200": {
-                        "description": "Obter a lista de gêneros"
+                        "description": "Obter a lista de gêneros",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Genre"
+                                    }
+                                }
+                            }
+                        }
                     },
                     "500": {
                         "description": "Falha ao obter a lista de gêneros"
@@ -175,7 +164,7 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "description": "ID do gênero a ser atualizado",
+                        "description": "ID do gênero a ser adicionado",
                         "schema": {
                             "type": "integer"
                         }
@@ -246,6 +235,42 @@
                     },
                     "500": {
                         "description": "Falha em atualizar o registro do gênero"
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Genre"],
+                "summary": "Remover um gênero",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID do gênero a ser atualizado",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GenreInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Gênero removido com sucesso"
+                    },
+                    "404": {
+                        "description": "Gênero não econtrado"
+                    },
+                    "500": {
+                        "description": "Falha em remover o registro do gênero"
                     }
                 }
             }
