@@ -127,6 +127,22 @@ app.get("/movies/:genreName", async (req, res) => {
     }
 });
 
+app.get("/genres", async (_, res) => {
+
+    try {
+        const genres = await prisma.genre.findMany({
+            orderBy: {
+                name: "asc"
+            }
+        });
+
+        res.status(200).json(genres);
+
+    } catch (error) {
+        return res.status(500).send({ message: "Falha ao buscar gêneros" })
+    }
+});
+
 app.post("/genres", async (req, res) => {
     const { name } = req.body;
 
