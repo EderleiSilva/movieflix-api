@@ -10,8 +10,31 @@ const prisma = new PrismaClient();
 app.use(express.json());
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-app.get("/movies", async (_, res) => {
+app.get("/movies/:sort", async (req, res) => {
+
     try {
+        const sort = req.params.sort;
+        console.log(sort)
+        let orderBy: Prisma.MovieOrderByWithRelationInput | Prisma.MovieOrderByWithRelationInput[] | undefined;
+
+        if (sort === "title") {
+            orderBy = {
+                title: "asc"
+            }
+        } else if (sort === "release_date") {
+            orderBy = {
+                release_date: "asc"
+            }
+        } else if (sort === "oscar_count") {
+            orderBy = {
+                oscar_count: "asc"
+            }
+        } else if (sort === "duration") {
+            orderBy = {
+                duration: "asc"
+            }
+        }
+
         const countMoviesAndAverageDuration = await prisma.movie.aggregate({
             _count: {
                 _all: true,
@@ -20,11 +43,9 @@ app.get("/movies", async (_, res) => {
                 duration: true
             }
         });
-    
+
         const movies = await prisma.movie.findMany({
-            orderBy: {
-                title: "asc"
-            },
+            orderBy,
             include: {
                 genres: true,
                 languages: true
@@ -34,7 +55,7 @@ app.get("/movies", async (_, res) => {
         res.status(200).json({ countMoviesAndAverageDuration, movies });
 
     } catch (error) {
-        return res.status(500).send({menssage: "Falha ao buscar lista de filmes"});
+        return res.status(500).send({ menssage: "Falha ao buscar lista de filmes" });
     }
 });
 
@@ -48,7 +69,7 @@ app.post('/movies', async (req, res) => {
             where: { title: { equals: title, mode: "insensitive" } }
         })
 
-        if(movieWithSameTitle){
+        if (movieWithSameTitle) {
             return res.status(409).send({ menssage: "Já existe um filme cadastrado com esse ítulo" });
         }
 
@@ -62,9 +83,9 @@ app.post('/movies', async (req, res) => {
             }
         });
     } catch (error) {
-        return res.status(500).send({menssage: "Falha ao cadastrar um filme"});
+        return res.status(500).send({ menssage: "Falha ao cadastrar um filme" });
     }
-    
+
     res.status(200).send();
 });
 
@@ -78,14 +99,14 @@ app.put("/movies/:id", async (req, res) => {
                 id
             }
         });
-    
-        if(!movie){
+
+        if (!movie) {
             return res.status(404).send({ message: "Filme não encontrado" });
         }
-    
+
         const data = { ...req.body };
         data.release_date = data.release_date ? new Date(data.release_date) : undefined;
-    
+
         // pegar os dados do filme que será atualizado e atualizar ele no prisma
         await prisma.movie.update({
             where: {
@@ -107,7 +128,7 @@ app.delete("/movies/:id", async (req, res) => {
     try {
         const movie = await prisma.movie.findUnique({ where: { id } });
 
-        if(!movie){
+        if (!movie) {
             return res.status(404).send({ message: "O filme não foi encontrado" });
         }
 
@@ -161,7 +182,7 @@ app.get("/genres", async (_, res) => {
 app.post("/genres", async (req, res) => {
     const { name } = req.body;
 
-    if(!name) {
+    if (!name) {
         return res.status(400).send({ message: "O nome do gênero é obrigatório" });
     }
 
@@ -170,7 +191,7 @@ app.post("/genres", async (req, res) => {
             where: { name: { equals: name, mode: "insensitive" } }
         });
 
-        if(genre){
+        if (genre) {
             return res.status(409).send({ message: "Esse gênero ja existe" });
         }
 
@@ -189,7 +210,7 @@ app.put("/genres/:id", async (req, res) => {
     const id = Number(req.params.id);
     const { name } = req.body;
 
-    if(!name){
+    if (!name) {
         return res.status(400).send({ message: "O nome do gênero é obrigatório" });
     }
 
@@ -198,7 +219,7 @@ app.put("/genres/:id", async (req, res) => {
             where: { id }
         });
 
-        if(!genre) {
+        if (!genre) {
             return res.status(404).send({ message: "Gênero não econtrado" });
         }
 
@@ -211,7 +232,7 @@ app.put("/genres/:id", async (req, res) => {
             }
         });
 
-        if(existingGenre){
+        if (existingGenre) {
             return res.status(409).send({ message: "Este nome de gênero ja existe." });
         }
 
@@ -235,7 +256,7 @@ app.delete("/genres/:id", async (req, res) => {
             where: { id }
         });
 
-        if(!genre){
+        if (!genre) {
             return res.status(404).send({ message: "Gênero não encontrado" });
         }
 
