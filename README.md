@@ -57,7 +57,7 @@ Foi solicitado para criar as funcionalidades abaixo.
 ### comandos para instalar no projeto antes de rodar em sua maquina
 - Abra o terminal na raiz do projeto
 
-<destails>
+<details>
     <summary>Verificar se o node js esta instalado na maquina</summary>
     Para poder instalar os componentes do node js, para verifficar se tem o node em sua maquina pode usar o comando `node -v` se aparecer a versão quer dizer que ele esta instalado. Caso não apareça a versão baixe o node no link: https://nodejs.org/pt
 
@@ -66,7 +66,7 @@ Foi solicitado para criar as funcionalidades abaixo.
     ```
 </details>
 
-<destails>
+<details>
 <summary>instalar componentes do NodeJs</summary>
     Com o terminal aberto dentro dentro da raiz do projeto digite o comando abaixo:
 
