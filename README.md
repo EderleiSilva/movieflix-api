@@ -1,4 +1,4 @@
-# MovieFlex-API
+# MovieFlix-API
 Esse projeto foi dado como atividade do curso [DevEmDobro](https://dev-em-dobro.ticto.club/signin) do conteúdo DevQuest Backend com o proposito de colocar em pratica todo o aprendizado até o momento.
 
 Foi solicitado para criar as funcionalidades abaixo.
