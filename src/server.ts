@@ -116,7 +116,7 @@ app.delete("/movies/:id", async (req, res) => {
     res.status(200).send();
 });
 
-app.get("/movies/genres/:genreName", async (req, res) => {
+app.get("/movies/:genreName", async (req, res) => {
     try {
         const moviesFilterdByGenderName = await prisma.movie.findMany({
             include: {

@@ -136,6 +136,74 @@
                 }
             }
         },
+        "/movies/languages": {
+            "get": {
+                "tags": ["Movie"],
+                "summary": "Filtrar filmes pelo idioma",
+                "parameters": [
+                    {
+                        "name": "languages",
+                        "in": "path",
+                        "riquired": true,
+                        "description": "Informar o paramentro do idioma como (/languages?language=inglês), podendo colocar qualquer idioma informando no banco",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Movie"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Falha ao filtrar filmes pelo idioma"
+                    }
+                }
+            }
+        },
+        "movies/filter": {
+            "get": {
+                "tags": ["Movie"],
+                "summary": "Filtrar filmes pelo idioma e ordernar por um dos criterios do banco",
+                "parameters": [
+                    {
+                        "name": "filter",
+                        "in": "path",
+                        "riquired": true,
+                        "description": "Informar os parametros de pesquisa como (/filter?language=ingês$sort=duration) podendo colocar qualquer informação que tenha no banco",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Movie"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Falha ao filtrar filmes pelo idioma"
+                    }
+                }
+            }
+        },
         "/genres": {
             "get": {
                 "tags": ["Genre"],
