@@ -10,32 +10,44 @@ const prisma = new PrismaClient();
 app.use(express.json());
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-app.get("/movies/:sort", async (req, res) => {
-
+app.get("/movies/filter", async (req, res) => {
     try {
-        const sort = req.params.sort;
-        console.log(sort)
+        const { language, sort } = req.query;
+        const languageName = language as string;
+        const sortName = sort as string;
         let orderBy: Prisma.MovieOrderByWithRelationInput | Prisma.MovieOrderByWithRelationInput[] | undefined;
 
-        if (sort === "title") {
+        if (sortName === "title") {
             orderBy = {
                 title: "asc"
             }
-        } else if (sort === "release_date") {
+        } else if (sortName === "release_date") {
             orderBy = {
                 release_date: "asc"
             }
-        } else if (sort === "oscar_count") {
+        } else if (sortName === "oscar_count") {
             orderBy = {
                 oscar_count: "asc"
             }
-        } else if (sort === "duration") {
+        } else if (sortName === "duration") {
             orderBy = {
                 duration: "asc"
             }
         }
 
-        const countMoviesAndAverageDuration = await prisma.movie.aggregate({
+        let where = {};
+        if(languageName) {
+            where = {
+                languages: {
+                    name: {
+                        equals: languageName,
+                        mode: "insensitive"
+                    }
+                }
+            }
+        }
+
+        const moviesAndAverageAnyAndOrderLanguage = await prisma.movie.aggregate({
             _count: {
                 _all: true,
             },
@@ -49,10 +61,11 @@ app.get("/movies/:sort", async (req, res) => {
             include: {
                 genres: true,
                 languages: true
-            }
+            },
+            where: where
         });
 
-        res.status(200).json({ countMoviesAndAverageDuration, movies });
+        res.status(200).json({ moviesAndAverageAnyAndOrderLanguage, movies });
 
     } catch (error) {
         return res.status(500).send({ menssage: "Falha ao buscar lista de filmes" });
@@ -90,7 +103,6 @@ app.post('/movies', async (req, res) => {
 });
 
 app.put("/movies/:id", async (req, res) => {
-    // pegar o id do registro que vai ser atualizado
     const id = Number(req.params.id);
 
     try {
@@ -107,7 +119,6 @@ app.put("/movies/:id", async (req, res) => {
         const data = { ...req.body };
         data.release_date = data.release_date ? new Date(data.release_date) : undefined;
 
-        // pegar os dados do filme que será atualizado e atualizar ele no prisma
         await prisma.movie.update({
             where: {
                 id
@@ -118,7 +129,6 @@ app.put("/movies/:id", async (req, res) => {
         return res.status(500).send({ menssage: "Falha ao atualizar o registro do filme" });
     }
 
-    // retornar o status correto informando que o filme foi atualizado
     res.status(200).send()
 });
 
@@ -140,7 +150,7 @@ app.delete("/movies/:id", async (req, res) => {
     res.status(200).send();
 });
 
-app.get("/movies/:genreName", async (req, res) => {
+app.get("/movies/genres/:genreName", async (req, res) => {
     try {
         const moviesFilterdByGenderName = await prisma.movie.findMany({
             include: {
@@ -160,6 +170,29 @@ app.get("/movies/:genreName", async (req, res) => {
         res.status(200).send(moviesFilterdByGenderName);
     } catch (error) {
         res.status(500).send({ message: "Falha ao filtrar filmes por gênero" });
+    }
+});
+
+app.get("/movies/languages/:languageName", async (req, res) => {
+    try {
+        const moviesFilterdByLanguageName = await prisma.movie.findMany({
+            include: {
+                genres: true,
+                languages: true
+            },
+            where: {
+                languages: {
+                    name: {
+                        equals: req.params.languageName,
+                        mode: "insensitive"
+                    }
+                }
+            }
+        });
+
+        res.status(200).send(moviesFilterdByLanguageName);
+    } catch (error) {
+        res.status(500).send({ message: "Falha ao filtrar filmes por idioma" });
     }
 });
 
