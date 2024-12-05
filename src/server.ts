@@ -11,8 +11,65 @@ app.use(express.json());
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get("/movies", async (_, res) => {
+    const moviesQuantityAndAverageDuration = await prisma.movie.aggregate({
+        _count: {
+            _all: true,
+        },
+        _avg: {
+            duration: true
+        }
+    });
+
+    const movies = await prisma.movie.findMany({
+        orderBy: {
+            title: "asc"
+        },
+        include: {
+            genres: true,
+            languages: true
+        }
+    });
+    res.status(200).json({moviesQuantityAndAverageDuration, movies});
+});
+
+app.get("/movies/filter", async (req, res) => {
+    const { language, sort } = req.query;
+    const languageName = language as string;
+    const sortName = sort as string;
+    let orderBy: Prisma.MovieOrderByWithRelationInput | Prisma.MovieOrderByWithRelationInput[] | undefined;
+
+    if (sortName === "title") {
+        orderBy = {
+            title: "asc"
+        }
+    } else if (sortName === "release_date") {
+        orderBy = {
+            release_date: "asc"
+        }
+    } else if (sortName === "oscar_count") {
+        orderBy = {
+            oscar_count: "asc"
+        }
+    } else if (sortName === "duration") {
+        orderBy = {
+            duration: "asc"
+        }
+    }
+
+    let where = {};
+    if (languageName) {
+        where = {
+            languages: {
+                name: {
+                    equals: languageName,
+                    mode: "insensitive"
+                }
+            }
+        }
+    }
+
     try {
-        const countMoviesAndAverageDuration = await prisma.movie.aggregate({
+        const moviesQuantityAndAverageDuration = await prisma.movie.aggregate({
             _count: {
                 _all: true,
             },
@@ -22,16 +79,15 @@ app.get("/movies", async (_, res) => {
         });
 
         const movies = await prisma.movie.findMany({
-            orderBy: {
-                title: "asc"
-            },
+            orderBy,
             include: {
                 genres: true,
                 languages: true
-            }
+            },
+            where: where
         });
 
-        res.status(200).json({ countMoviesAndAverageDuration, movies });
+        res.status(200).json({ moviesQuantityAndAverageDuration, movies });
 
     } catch (error) {
         return res.status(500).send({ menssage: "Falha ao buscar lista de filmes" });
@@ -136,99 +192,6 @@ app.get("/movies/:genreName", async (req, res) => {
         res.status(200).send(moviesFilterdByGenderName);
     } catch (error) {
         res.status(500).send({ message: "Falha ao filtrar filmes por gênero" });
-    }
-});
-
-app.get("/movies/languages", async (req, res) => {
-    const { languages } = req.query;
-    const languageName = languages as string;
-
-    let where = {};
-    if (languageName) {
-        where = {
-            languages: {
-                name: {
-                    equals: languageName,
-                    mode: "insensitive"
-                }
-            }
-        }
-    }
-
-    try {
-        const moviesFilterdByLanguageName = await prisma.movie.findMany({
-            include: {
-                genres: true,
-                languages: true
-            },
-            where: where
-        });
-
-        res.status(200).send(moviesFilterdByLanguageName);
-    } catch (error) {
-        res.status(500).send({ message: "Falha ao filtrar filmes por idioma" });
-    }
-});
-
-app.get("/movies/filter", async (req, res) => {
-    const { language, sort } = req.query;
-    const languageName = language as string;
-    const sortName = sort as string;
-    let orderBy: Prisma.MovieOrderByWithRelationInput | Prisma.MovieOrderByWithRelationInput[] | undefined;
-
-    if (sortName === "title") {
-        orderBy = {
-            title: "asc"
-        }
-    } else if (sortName === "release_date") {
-        orderBy = {
-            release_date: "asc"
-        }
-    } else if (sortName === "oscar_count") {
-        orderBy = {
-            oscar_count: "asc"
-        }
-    } else if (sortName === "duration") {
-        orderBy = {
-            duration: "asc"
-        }
-    }
-
-    let where = {};
-    if (languageName) {
-        where = {
-            languages: {
-                name: {
-                    equals: languageName,
-                    mode: "insensitive"
-                }
-            }
-        }
-    }
-
-    try {
-        const moviesAndAverageAnyAndOrderLanguage = await prisma.movie.aggregate({
-            _count: {
-                _all: true,
-            },
-            _avg: {
-                duration: true
-            }
-        });
-
-        const movies = await prisma.movie.findMany({
-            orderBy,
-            include: {
-                genres: true,
-                languages: true
-            },
-            where: where
-        });
-
-        res.status(200).json({ moviesAndAverageAnyAndOrderLanguage, movies });
-
-    } catch (error) {
-        return res.status(500).send({ menssage: "Falha ao buscar lista de filmes" });
     }
 });
 
